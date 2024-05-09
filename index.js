@@ -34,14 +34,35 @@ const generateToken = (user) => {
   return jwt.sign(user, JWT_SECRET, { expiresIn: "1h" });
 };
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  //Lógica de user y pass
-  if (username === "felipe" && password === "4321") {
-    const token = generateToken({ username });
-    res.json({ token }); //Devuelve token con 1h. de validez
-  } else {
-    res.status(401).json({ error: "Credenciales incorrectas" });
+  try {
+    //aca usamos el microservicio de obtener todos los usuarios
+    const { data: users } = await axios.get(
+      "http://localhost:6001/all_registers"
+    );
+
+    // buscar el usuario en la bd en la tabla usuarios
+    const user = users.find(
+      (user) => user.usuario === username && user.password === password
+    );
+
+    if (!user) {
+      return res.status(401).json({ error: "Credenciales incorrectas" });
+    }
+
+    // Generar el token para el usuario encontrado con el estado y rol_id para despues trabajar en el front 
+    const tokenPayload = {
+      username: user.usuario,
+      estado: user.estado,
+      rol_id: user.rol_id,
+    };
+    const token = generateToken(tokenPayload);
+    //este res.json devuelve el token que usamos para hacer las otras peticiones teniendo el verifyToken y ademas el rol_id y el estado que nos van a permitir limitar las funciones de logearte y de realizar acciones
+    res.json({ token, estado: user.estado, rol_id: user.rol_id }); 
+  } catch (error) {
+    console.error("Error al obtener registros de usuarios:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 

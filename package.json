@@ -6,10 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js",
-    "obtenerUsuarios" : "node microservices/obtenerUsuarios.js",
+    "obtenerUsuarios": "node microservices/obtenerUsuarios.js",
     "crearUsuario": "node microservices/crearUsuario.js",
     "deshabilitarUsuario": "node microservices/deshabilitarUsuario.js",
-    "habilitarUsuario" : "node microservices/habilitarUsuario.js"
+    "habilitarUsuario": "node microservices/habilitarUsuario.js"
   },
   "keywords": [],
   "author": "",
