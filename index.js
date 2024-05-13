@@ -134,3 +134,13 @@ app.post("/crearUsuario", verifyToken, async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Servidor de index corriendo en http://localhost:${PORT}`);
 });
+
+app.get("/zorros", verifyToken, async (req, res) => {
+  try {
+    const response = await axios.get("http://localhost:3005/zorros");
+    res.json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener los zorros" });
+  }
+});

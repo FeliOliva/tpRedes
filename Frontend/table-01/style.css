@@ -325,3 +325,28 @@ button.create-user-btn:hover {
 button.create-user-btn:focus {
   outline: none;
 }
+.btn-habilitar,
+.btn-deshabilitar {
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.btn-deshabilitar {
+  background-color: #f44336;
+}
+
+.btn-habilitar:hover,
+.btn-deshabilitar:hover {
+  opacity: 0.8;
+}
+
+.btn-habilitar:focus,
+.btn-deshabilitar:focus {
+  outline: none;
+}
+

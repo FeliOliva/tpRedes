@@ -9,7 +9,8 @@
     "obtenerUsuarios": "node microservices/obtenerUsuarios.js",
     "crearUsuario": "node microservices/crearUsuario.js",
     "deshabilitarUsuario": "node microservices/deshabilitarUsuario.js",
-    "habilitarUsuario": "node microservices/habilitarUsuario.js"
+    "habilitarUsuario": "node microservices/habilitarUsuario.js",
+    "api": "node microservices/api.js"
   },
   "keywords": [],
   "author": "",

@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function obtenerUsuarios() {
   let token = localStorage.getItem("token");
-  console.log(token);
   if (!token) {
     console.error("No se ha encontrado el token en el almacenamiento local.");
     return [];
@@ -15,7 +14,6 @@ async function obtenerUsuarios() {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log(response.data);
     return response.data.registros;
   } catch (error) {
     console.error("Error al obtener los usuarios:", error);
@@ -24,7 +22,6 @@ async function obtenerUsuarios() {
 }
 async function cargarTabla() {
   const teamMembers = await obtenerUsuarios();
-  console.log(teamMembers);
   let tableRowCount = document.getElementsByClassName("table-row-count");
   tableRowCount[0].innerHTML = `(${teamMembers.length}) Members`;
   let tableBody = document.getElementById("team-member-rows");
@@ -77,7 +74,6 @@ async function agregarEventosAcciones() {
       if (!userId) return;
       try {
         const response = await habilitarUsuarios(userId);
-        console.log("Usuario habilitado:", userId);
       } catch (error) {
         console.error("Error al habilitar usuario:", error);
       }
@@ -90,7 +86,6 @@ async function agregarEventosAcciones() {
       if (!userId) return;
       try {
         const response = await deshabilitarUsuarios(userId, rol);
-        console.log("Usuario deshabilitado:", userId);
       } catch (error) {
         console.error("Error al deshabilitar usuario:", error);
       }
@@ -108,7 +103,7 @@ async function habilitarUsuarios(usuarioId, rolUsuario) {
     alert("No tienes permisos para habilitar usuarios");
     return;
   } else if (rolUsuario === "master") {
-    alert("No puedes deshabilitar otro master");
+    alert("No puedes habilitar otro master");
     return;
   }
   try {
@@ -132,7 +127,6 @@ async function deshabilitarUsuarios(usuarioId, rolUsuario) {
   let token = localStorage.getItem("token");
   let rol = localStorage.getItem("rol_nombre");
   let estado = 1;
-  console.log(usuarioId, rolUsuario);
   if (!token) {
     throw new Error("No se ha encontrado el token en el almacenamiento local.");
   } else if (rol !== "admin" && rol !== "master") {
@@ -228,12 +222,19 @@ async function crearUsuario() {
         },
       }
     );
-
-    console.log("Respuesta del segundo post:", response.data);
     await cargarTabla();
     cerrarModalCrearUsuario();
   } catch (error) {
     console.error("Error al crear usuario:", error);
     alert(error.message);
+  }
+}
+async function mostrarImg() {
+  const rolActual = localStorage.getItem("rol_nombre");
+  if (rolActual !== "admin" && rolActual !== "master") {
+    alert("No tienes permisos para ver imagenes");
+    return;
+  } else {
+    location.href = "../zorro.html";
   }
 }
