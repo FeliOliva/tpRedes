@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const { Pool } = require("pg");
 require("dotenv").config();
 
@@ -7,6 +8,7 @@ const app = express();
 const PORT2 = process.env.PORT2;
 
 app.use(bodyParser.json());
+app.use(cors());
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -51,7 +53,15 @@ const pool = new Pool({
 app.get("/all_registers", async (req, res) => {
   try {
     const client = await pool.connect();
-    const result = await client.query("SELECT * FROM usuarios ORDER BY id");
+    const result =
+      await client.query(`  SELECT u.id, u.nombre, u.apellido, u.usuario, u.password, 
+      r.nombre AS rol_nombre,
+      u.estado,
+      u.created_at
+FROM usuarios u
+JOIN roles r ON u.rol_id = r.id
+ORDER BY r.nombre ASC;
+`);
     client.release();
     res.json(result.rows);
   } catch (err) {
@@ -59,8 +69,6 @@ app.get("/all_registers", async (req, res) => {
     res.status(500).json({ error: "Error al obtener los registros" });
   }
 });
-
-
 
 app.listen(PORT2, () => {
   console.log(`Servidor de practico corriendo en http://localhost:${PORT2}`);

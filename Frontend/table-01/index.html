@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Team Table</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="table-widget">
+      <table>
+        <caption>
+          Team Members
+          <span class="table-row-count"></span>
+        </caption>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Usuario</th>
+            <th>ROL</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="team-member-rows">
+          <!-- Rows will be dynamically generated here -->
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="4">
+              <ul class="pagination">
+                <!-- Pagination links will be generated here -->
+              </ul>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+      <button onclick="abrirModalCrearUsuario()" class="create-user-btn">
+        Crear Usuario
+      </button>
+      <div id="modal-crear-usuario" style="display: none" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="cerrarModalCrearUsuario()">&times;</span>
+          <input type="text" id="nombre" placeholder="Nombre" />
+          <input type="text" id="apellido" placeholder="Apellido" />
+          <input type="text" id="usuario" placeholder="Usuario" />
+          <input type="password" id="password" placeholder="Contraseña" />
+          <select id="rol">
+            <option value="1">Admin</option>
+            <option value="2">Master</option>
+            <option value="3">Usuario</option>
+          </select>
+          <button onclick="crearUsuario()">Crear</button>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  </body>
+</html>

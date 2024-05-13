@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const { Pool } = require("pg");
 require("dotenv").config();
 
@@ -7,6 +8,7 @@ const app = express();
 const PORT3 = process.env.PORT3;
 
 app.use(bodyParser.json());
+app.use(cors());
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -14,8 +16,6 @@ const pool = new Pool({
     rejectUnauthorized: false,
   },
 });
-
-
 
 app.post("/create_user", async (req, res) => {
   try {
@@ -36,4 +36,3 @@ app.post("/create_user", async (req, res) => {
 app.listen(PORT3, () => {
   console.log(`Servidor de practico corriendo en http://localhost:${PORT3}`);
 });
-

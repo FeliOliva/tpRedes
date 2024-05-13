@@ -1,11 +1,13 @@
 const express = require("express");
 const axios = require("axios");
 require("dotenv").config();
+const cors = require("cors");
 
 const app = express();
 const PORT = process.env.PORT;
 
 app.use(express.json());
+app.use(cors());
 
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -37,12 +39,12 @@ const generateToken = (user) => {
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
-    //aca usamos el microservicio de obtener todos los usuarios
+    // Obtener todos los usuarios
     const { data: users } = await axios.get(
-      "http://localhost:6001/all_registers"
+      "http://localhost:3001/all_registers"
     );
 
-    // buscar el usuario en la bd en la tabla usuarios
+    // Buscar el usuario en la base de datos
     const user = users.find(
       (user) => user.usuario === username && user.password === password
     );
@@ -51,15 +53,16 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Credenciales incorrectas" });
     }
 
-    // Generar el token para el usuario encontrado con el estado y rol_id para despues trabajar en el front 
+    // Generar el token para el usuario encontrado
     const tokenPayload = {
       username: user.usuario,
       estado: user.estado,
-      rol_id: user.rol_id,
+      rol_nombre: user.rol_nombre,
     };
     const token = generateToken(tokenPayload);
-    //este res.json devuelve el token que usamos para hacer las otras peticiones teniendo el verifyToken y ademas el rol_id y el estado que nos van a permitir limitar las funciones de logearte y de realizar acciones
-    res.json({ token, estado: user.estado, rol_id: user.rol_id }); 
+
+    // Devolver el token y la información del usuario
+    res.json({ token, estado: user.estado, rol_username: user.rol_nombre });
   } catch (error) {
     console.error("Error al obtener registros de usuarios:", error);
     res.status(500).json({ error: "Error interno del servidor" });
@@ -68,7 +71,8 @@ app.post("/login", async (req, res) => {
 
 app.get("/registros", verifyToken, async (req, res) => {
   try {
-    const response = await axios.get("http://localhost:6001/all_registers");
+    // Obtener registros de usuarios (protegido por token)
+    const response = await axios.get("http://localhost:3001/all_registers");
     const registros = response.data;
     res.json({ registros });
   } catch (error) {
@@ -77,6 +81,56 @@ app.get("/registros", verifyToken, async (req, res) => {
   }
 });
 
+app.put("/habilitar/:id", verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { estado } = req.body;
+    const response = await axios.put(`http://localhost:3003/hab_user/${id}`, {
+      estado,
+    });
+    res.json({ message: "Usuario habilitado correctamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al habilitar el usuario" });
+  }
+});
+
+app.put("/deshabilitar/:id", verifyToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { estado } = req.body;
+
+    const response = await axios.put(
+      `http://localhost:3004/des_hab_user/${id}`,
+      {
+        estado,
+      }
+    );
+
+    res.json({ message: "Usuario deshabilitado correctamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al deshabilitar el usuario" });
+  }
+});
+
+app.post("/crearUsuario", verifyToken, async (req, res) => {
+  try {
+    const { nombre, apellido, usuario, password, rol_id, estado } = req.body;
+    const response = await axios.post("http://localhost:3002/create_user", {
+      nombre,
+      apellido,
+      usuario,
+      password,
+      rol_id,
+      estado,
+    });
+    res.json({ message: "Usuario creado correctamente" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al crear el usuario" });
+  }
+});
 app.listen(PORT, () => {
-  console.log(`Servidor de suma corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor de index corriendo en http://localhost:${PORT}`);
 });
